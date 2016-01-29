@@ -21,9 +21,9 @@ defmodule MessageFetcher do
     {:ok, 0}
   end
 
-  @token File.read! "token"
-  @updateUrl String.strip("https://api.telegram.org/bot"
-                          <> @token <> "/getUpdates")
+  @token String.strip(File.read! "token")
+  @updateUrl "https://api.telegram.org/bot"
+                          <> @token <> "/getUpdates"
 
   def handle_info(_, offset) do
     url = @updateUrl <> "?offset=" <> Integer.to_string(offset)

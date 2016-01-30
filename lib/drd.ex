@@ -9,23 +9,29 @@ defmodule Drd do
 end
 
 defmodule MessageFetcher do
+  @moduledoc """
+  Worker that retrieves new messages from the Telegram Bot API
+  once every second.
+  """
   use GenServer
 
+  @doc """
+  Initializes the worker with an update offset of o.
+  """
   def start_link do
-    GenServer.start_link(__MODULE__, %{})
+    GenServer.start_link(__MODULE__, 0)
   end
 
   # state is the offset
-  def init(_state) do
+  def init(offset) do
     Process.send_after(self(), :update, 1000)
-    {:ok, 0}
+    {:ok, offset}
   end
 
   @token String.strip(File.read! "token")
-  @updateUrl "https://api.telegram.org/bot"
-                          <> @token <> "/getUpdates"
+  @updateUrl "https://api.telegram.org/bot" <> @token <> "/getUpdates"
 
-  def handle_info(_, offset) do
+  def handle_info(:update, offset) do
     url = @updateUrl <> "?offset=" <> Integer.to_string(offset)
 
     reply =
@@ -40,14 +46,17 @@ defmodule MessageFetcher do
               nil ->
                 offset
               _ ->
-                IO.inspect last_update
                 update_id = last_update["update_id"]
                 update_id + 1
             end
+
+          Enum.each(updates, &(spawn(UpdateHandler, :handle, [&1])))
           {:noreply, next_offset}
+
         {:error, %HTTPoison.Error{reason: reason}} ->
           IO.inspect reason
           {:noreply, offset}
+
         err ->
           IO.inspect err
           {:noreply, offset}

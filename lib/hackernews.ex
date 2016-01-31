@@ -1,6 +1,6 @@
 defmodule HackerNews do
-  def get_stories do
-    Enum.take(topstories, 10)
+  def get_stories(num \\ 3) do
+    Enum.take(topstories, num)
     |> Enum.map(&(story &1))
   end
 

@@ -10,26 +10,38 @@ defmodule UpdateHandler do
 
   defp send_message(to, text, override \\ %{}) do
     send_raw(Dict.merge(%{"chat_id" => to,
-                          "text" => text},
+                          "text" => text,
+                          "parse_mode" => "HTML"},
                         override))
   end
 
   def handle(%{"message" => message}) do
-    text = message["text"]
+    text = String.strip message["text"]
     to = message["from"]["id"]
     reply = &(send_message(to, &1))
     cond do
       text == "hi" -> "hello"
-      text == "/hn" ->
-        Enum.each(HackerNews.get_stories,
+
+      String.starts_with?(text, "/hn") ->
+        num =
+          case String.split(text, " ") do
+            ["/hn", n] ->
+              {n, _} = Integer.parse n
+              n
+            ["/hn"] -> 3
+            other -> IO.inspect other
+          end
+
+        Enum.each(HackerNews.get_stories(num),
           fn(story) ->
             send_message(to,
-                         "<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">Discussion</a> \n"<>
-                           "<a href=\"#{story["url"]}\">#{story["title"]}</a>",
-                         %{"parse_mode" => "HTML"})
+                         "<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["descendants"]} comments</a> \n"<>
+                           "<a href=\"#{story["url"]}\">#{story["title"]}</a>")
           end)
+
       text == "/reddit" ->
         reply.("Reddit not supported yet")
+
       true ->
         IO.puts "[#{to}] #{text}"
     end
@@ -55,5 +67,4 @@ defmodule UpdateHandler do
         "server side error"
     end
   end
-
 end

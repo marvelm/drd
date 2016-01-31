@@ -28,7 +28,7 @@ defmodule MessageFetcher do
     {:ok, offset}
   end
 
-  @token String.strip(File.read! "token")
+  @token Application.get_env(:drd, :token)
   @updateUrl "https://api.telegram.org/bot" <> @token <> "/getUpdates"
 
   def handle_info(:update, offset) do
@@ -43,13 +43,12 @@ defmodule MessageFetcher do
 
           next_offset =
             case last_update do
-              nil ->
-                offset
+              nil -> offset
               _ ->
                 update_id = last_update["update_id"]
                 update_id + 1
             end
-
+          
           Enum.each(updates, &(spawn(UpdateHandler, :handle, [&1])))
           {:noreply, next_offset}
 

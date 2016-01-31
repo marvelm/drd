@@ -8,6 +8,9 @@ use Mix.Config
 # if you want to provide default values for your application for
 # 3rd-party users, it should be done in your "mix.exs" file.
 
+token = String.strip(File.read! "token")
+config :drd, token: token
+
 # You can configure for your application as:
 #
 #     config :drd, key: :value

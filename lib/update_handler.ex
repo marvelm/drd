@@ -23,23 +23,36 @@ defmodule UpdateHandler do
       text == "hi" -> "hello"
 
       String.starts_with?(text, "/hn") ->
-        num =
-          case String.split(text, " ") do
-            ["/hn", n] ->
-              {n, _} = Integer.parse n
-              n
-            ["/hn"] -> 3
-            other -> IO.inspect other
-          end
+        case String.split(text, " ") do
+          ["/hn", "ask"] ->
+            Enum.each(HackerNews.get_ask_stories,
+              fn(story) ->
+                reply.("<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["title"]}</a>\n#{story["tex"]}")
+              end)
 
-        Enum.each(HackerNews.get_stories(num),
-          fn(story) ->
-            reply.("""
-            <a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">
-              #{story["descendants"]} comments</a>
-            <a href=\"#{story["url"]}\">#{story["title"]}</a>
-            """)
-          end)
+          ["/hn", "ask", n] ->
+            {num, _} = Integer.parse n
+            Enum.each(HackerNews.get_ask_stories(num),
+              fn(story) ->
+                reply.("<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["title"]}</a>\n#{story["tex"]}")
+              end)
+
+          ["/hn", n] ->
+            {num, _} = Integer.parse n
+            Enum.each(HackerNews.get_top_stories(num),
+              fn(story) ->
+                reply.("<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["descendants"]} comments</a>\n<a href=\"#{story["url"]}\">#{story["title"]}</a>")
+              end)
+
+          ["/hn"] ->
+            Enum.each(HackerNews.get_top_stories,
+              fn(story) ->
+                reply.("<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["descendants"]} comments</a>\n<a href=\"#{story["url"]}\">#{story["title"]}</a>")
+              end)
+
+          other -> IO.inspect other
+        end
+
 
       text == "/reddit" ->
         reply.("Reddit not supported yet")

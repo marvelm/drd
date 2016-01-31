@@ -34,9 +34,11 @@ defmodule UpdateHandler do
 
         Enum.each(HackerNews.get_stories(num),
           fn(story) ->
-            send_message(to,
-                         "<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["descendants"]} comments</a> \n"<>
-                           "<a href=\"#{story["url"]}\">#{story["title"]}</a>")
+            reply.("""
+            <a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">
+              #{story["descendants"]} comments</a>
+            <a href=\"#{story["url"]}\">#{story["title"]}</a>
+            """)
           end)
 
       text == "/reddit" ->

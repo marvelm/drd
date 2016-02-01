@@ -48,7 +48,7 @@ defmodule MessageFetcher do
                 update_id = last_update["update_id"]
                 update_id + 1
             end
-          
+
           Enum.each(updates, &(spawn(UpdateHandler, :handle, [&1])))
           {:noreply, next_offset}
 

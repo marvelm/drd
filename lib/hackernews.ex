@@ -1,12 +1,19 @@
 defmodule HackerNews do
   def get_top_stories(num \\ 3) do
-    Enum.take(topstories, num)
-    |> Enum.map(&(item &1))
+    receive do
+      pid ->
+        Enum.take(topstories, num)
+        |> Enum.each(&(send pid, {:hn_top, item(&1)}))
+    end
   end
 
   def get_ask_stories(num \\ 3) do
-    Enum.take(askstories, num)
-    |> Enum.map(&(item &1))
+    receive do
+      pid ->
+        Enum.take(askstories, num)
+        |> Enum.each(&(send pid, {:hn_ask, item(&1)}))
+        send pid, :stop
+    end
   end
 
   defp httpget(url) do

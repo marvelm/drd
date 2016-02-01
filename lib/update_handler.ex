@@ -72,6 +72,8 @@ defmodule UpdateHandler do
         {num, _} = Integer.parse(num)
         send self, {:reddit, Reddit.get_subreddit(subreddit, num)}
 
+      ["/cbc"] -> nil
+
       other ->
         send self, :stop
         Logger.info other

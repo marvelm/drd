@@ -12,7 +12,6 @@ defmodule HackerNews do
       pid ->
         Enum.take(askstories, num)
         |> Enum.each(&(send pid, {:hn_ask, item(&1)}))
-        send pid, :stop
     end
   end
 

@@ -19,67 +19,67 @@ defmodule UpdateHandler do
     text = String.strip message["text"]
     to = message["from"]["id"]
     reply = &(send_message(to, &1))
-    cond do
-      text == "hi" -> "hello"
 
-      String.starts_with?(text, "/hn") ->
-        case String.split(text, " ") do
-          ["/hn", "ask"] ->
-            Enum.each(HackerNews.get_ask_stories,
+    case String.split(text, " ") do
+      ["/hn", "ask"] ->
+        Enum.each(HackerNews.get_ask_stories,
+          fn(story) ->
+            reply.("<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["title"]}</a>\n#{story["descendants"]} comments\n#{story["text"]}")
+          end)
+
+      ["/hn", "ask", n] ->
+        {num, _} = Integer.parse n
+        Enum.each(HackerNews.get_ask_stories(num),
+          fn(story) ->
+            reply.("<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["title"]}</a>\n#{story["descendants"]} comments\n#{story["text"]}")
+          end)
+
+      ["/hn", n] ->
+        {num, _} = Integer.parse n
+        Enum.each(HackerNews.get_top_stories(num),
+          fn(story) ->
+            reply.("<a href=\"#{story["url"]}\">#{story["title"]}</a>\n<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["descendants"]} comments</a>")
+          end)
+
+      ["/hn"] ->
+        Enum.each(HackerNews.get_top_stories,
+          fn(story) ->
+            reply.("<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["descendants"]} comments</a>\n<a href=\"#{story["url"]}\">#{story["title"]}</a>")
+          end)
+
+      ["/reddit"] ->
+        Enum.each(Reddit.get_subreddit,
+          fn(story) ->
+            reply.("<a href=\"#{story["url"]}\">#{story["title"]}</a>\n<a href=\"https://reddit.com#{story["permalink"]}\">#{story["num_comments"]} comments</a>")
+          end)
+
+      ["/reddit", second_arg] ->
+        case Integer.parse(second_arg) do
+          {num, _} ->
+            Enum.each(Reddit.get_subreddit("all", num),
               fn(story) ->
-                reply.("<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["title"]}</a>\n#{story["tex"]}")
+                reply.("<a href=\"#{story["url"]}\">#{story["title"]}</a>\n<a href=\"https://reddit.com#{story["permalink"]}\">#{story["num_comments"]} comments</a>")
               end)
-
-          ["/hn", "ask", n] ->
-            {num, _} = Integer.parse n
-            Enum.each(HackerNews.get_ask_stories(num),
+          _ ->
+            subreddit = second_arg
+            Enum.each(Reddit.get_subreddit(subreddit),
               fn(story) ->
-                reply.("<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["title"]}</a>\n#{story["tex"]}")
+                reply.("<a href=\"#{story["url"]}\">#{story["title"]}</a>\n<a href=\"https://reddit.com#{story["permalink"]}\">#{story["num_comments"]} comments</a>")
               end)
-
-          ["/hn", n] ->
-            {num, _} = Integer.parse n
-            Enum.each(HackerNews.get_top_stories(num),
-              fn(story) ->
-                reply.("<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["descendants"]} comments</a>\n<a href=\"#{story["url"]}\">#{story["title"]}</a>")
-              end)
-
-          ["/hn"] ->
-            Enum.each(HackerNews.get_top_stories,
-              fn(story) ->
-                reply.("<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["descendants"]} comments</a>\n<a href=\"#{story["url"]}\">#{story["title"]}</a>")
-              end)
-
-          other -> IO.inspect other
         end
 
+      ["/reddit", subreddit, num] ->
+        {num, _} = Integer.parse(num)
+        Enum.each(Reddit.get_subreddit(subreddit, num),
+          fn(story) ->
+            reply.("<a href=\"#{story["url"]}\">#{story["title"]}</a>\n<a href=\"https://reddit.com#{story["permalink"]}\">#{story["num_comments"]} comments</a>")
+          end)
 
-      text == "/reddit" ->
-        reply.("Reddit not supported yet")
-
-      true ->
-        IO.puts "[#{to}] #{text}"
+      other -> IO.inspect other
     end
   end
 
   def handle(unmatched_update) do
     IO.inspect unmatched_update
-  end
-
-  def reddit(subreddit \\ "all") do
-    url = "https://api.reddit.com/r/" <> subreddit
-    case HTTPoison.get(url) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        json = Poison.decode! body
-        json["data"]["children"]
-        "found"
-
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        IO.inspect reason
-        "server side error"
-      err ->
-        IO.inspect err
-        "server side error"
-    end
   end
 end

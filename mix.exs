@@ -11,13 +11,25 @@ defmodule Drd.Mixfile do
   end
 
   # Configuration for the OTP application
+
+  defp applications do
+    applications(Mix.env)
+  end
+  defp applications(:dev) do
+    applications(:other) ++ [:remix]
+  end
+  defp applications(_) do
+    [:logger,
+     :httpoison,
+     :timex]
+  end
+
   #
   # Type "mix help compile.app" for more information
   def application do
     [
-      mod: {Drd, []},
-      applications: [:logger,
-                     :httpoison]]
+      # mod: {Drd, []},
+      applications: applications]
   end
 
   # Dependencies can be Hex packages:
@@ -31,6 +43,9 @@ defmodule Drd.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [{:httpoison, "~> 0.8.0"},
-     {:poison, "~> 2.0"}]
+     {:poison, "~> 2.0"},
+     {:amnesia, github: "meh/amnesia", tag: :master},
+     {:remix, "~> 0.0.1", only: :dev},
+     {:timex, "~> 1.0.1"}]
   end
 end

@@ -1,22 +1,6 @@
 defmodule UpdateHandler do
-  @token Application.get_env(:drd, :token)
-  @sendUrl "https://api.telegram.org/bot" <> @token <> "/sendMessage"
-
   require Logger
   require Amnesia
-
-  def send_raw(message) do
-    HTTPoison.post!(@sendUrl,
-                    Poison.encode!(message),
-                    [{"Content-Type", "application/json"}])
-  end
-
-  def send_message(to, text, override \\ %{}) do
-    send_raw(Dict.merge(%{"chat_id" => to,
-                          "text" => text,
-                          "parse_mode" => "HTML"},
-                        override))
-  end
 
   def format_reply({:hn_ask, story}) do
     "<a href=\"https://news.ycombinator.com/item?id=#{story["id"]}\">#{story["title"]}</a>\n#{story["descendants"]} comments\n#{story["text"]}"
@@ -27,7 +11,7 @@ defmodule UpdateHandler do
   end
 
   def format_reply({:reddit, story}) do
-      "<a href=\"#{story["url"]}\">#{story["title"]}</a>\n<a href=\"https://reddit.com#{story["permalink"]}\">#{story["num_comments"]} comments</a>"
+    "<a href=\"#{story["url"]}\">#{story["title"]}</a>\n<a href=\"https://reddit.com#{story["permalink"]}\">#{story["num_comments"]} comments</a>"
   end
 
   def listen(reply) do
@@ -74,7 +58,7 @@ defmodule UpdateHandler do
     end
     Database.User.write! user
 
-    reply = &(send_message(to, &1))
+    reply = &(Telegram.send_message(to, &1))
 
     case String.split(text, " ") do
       ["/hn", "ask"] ->

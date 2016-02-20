@@ -9,7 +9,7 @@ defmodule Notifier do
 
   def init(state) do
     # Update every 5 hours.
-    Process.send_after(self, :update, @interval)
+    Process.send_after(self, :update, 0)
     {:ok, state}
   end
 
@@ -22,7 +22,7 @@ defmodule Notifier do
     messages = listen(4)
 
     Database.User.keys!() |> Enum.each(fn key ->
-      reply = &(UpdateHandler.send_message(key, &1))
+      reply = &(Telegram.send_message(key, &1))
       Enum.each(messages, reply)
     end)
 

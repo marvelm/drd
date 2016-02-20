@@ -8,7 +8,7 @@
   $ mix deps.get
   $ mix deps.compile
   $ mix compile
-  $ iex -S mix
   $ mix amnesia.create -db Database --disk
+  $ iex -S mix
   Drd.main
 ```

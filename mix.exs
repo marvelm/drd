@@ -28,7 +28,7 @@ defmodule Drd.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [
-      # mod: {Drd, []},
+      mod: {Drd, []},
       applications: applications]
   end
 

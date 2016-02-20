@@ -14,4 +14,4 @@
 ## Running
 First, you need a [Telegram Bot API token](https://core.telegram.org/bots#create-a-new-bot). Then, put it in a file called `token`.
 
-Running Drd is as simple as `mix run`.
+Running Drd is as simple as `mix run --no-halt`.

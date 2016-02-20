@@ -1,9 +1,9 @@
 defmodule Drd do
-  import Supervisor.Spec
   require Amnesia
-  require Logger
+  use Application
+  import Supervisor.Spec
 
-  def main do
+  def start(_type, _args) do
     Amnesia.start
 
     Supervisor.start_link(

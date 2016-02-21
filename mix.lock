@@ -2,6 +2,8 @@
   "certifi": {:hex, :certifi, "0.3.0"},
   "combine": {:hex, :combine, "0.7.0"},
   "exquisite": {:hex, :exquisite, "0.1.6"},
+  "feeder": {:hex, :feeder, "1.4.7"},
+  "feeder_ex": {:git, "https://github.com/manukall/feeder_ex.git", "d9c7fed96c27c6ce33dfdeacd1e9081381ff0645", [tag: :master]},
   "hackney": {:hex, :hackney, "1.4.8"},
   "httpoison": {:hex, :httpoison, "0.8.1"},
   "idna": {:hex, :idna, "1.0.3"},

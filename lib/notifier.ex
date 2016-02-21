@@ -8,8 +8,8 @@ defmodule Notifier do
   @interval 1000 * 60 * 60 * 5
 
   def init(state) do
-    # Update every 5 hours.
-    Process.send_after(self, :update, 0)
+    # Send first update after 5 hours
+    Process.send_after(self, :update, @interval)
     {:ok, state}
   end
 

@@ -8,8 +8,8 @@ defmodule Reddit do
           json ->
             stories = json["data"]["children"]
             Enum.take(stories, num)
-            |> Enum.each(&(send caller, {:reddit, &1["data"]})) # Extracts useful data.
-            send caller, :stop
+            |> Enum.each(&(send caller,
+                           {:reddit, &1["data"]})) # Extracts useful data.
         end
     end
   end

@@ -3,7 +3,7 @@ defmodule HackerNews do
     receive do
       caller ->
         Enum.take(topstories, num)
-        |> Enum.each(&(send caller, &1))
+        |> Enum.each(&(send caller, {:hn_top, item(&1)}))
     end
   end
 
@@ -11,7 +11,7 @@ defmodule HackerNews do
     receive do
       caller ->
         Enum.take(askstories, num)
-        |> Enum.each(&(send caller, &1))
+        |> Enum.each(&(send caller, {:hn_ask, item(&1)}))
     end
   end
 

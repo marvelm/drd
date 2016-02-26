@@ -64,7 +64,6 @@ defmodule Cbc do
         feed.entries
         |> Enum.take(num)
         |> Enum.each(&(send caller, {:rss, &1}))
-        send caller, :stop
     end
   end
 end

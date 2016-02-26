@@ -19,6 +19,7 @@ defmodule Notifier do
     send(spawn(HackerNews, :get_top_stories, [2]), self)
     # send(spawn(HackerNews, :get_ask_stories, [1]), self)
     send(spawn(Reddit, :get_subreddit, ["all", 2]), self)
+    send(spawn(Cbc, :get_feed, ["manitoba", 3]), self)
     messages = listen(4)
 
     Database.User.keys!() |> Enum.each(fn key ->

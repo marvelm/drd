@@ -20,6 +20,7 @@ defmodule Cbc do
       "tech" -> "technology"
       # offbeat
       # sports
+      "sport" -> "sports"
       "mlb" -> "sports-mlb"
       "nba" -> "sports-nba"
       "curling" -> "sports-curling"
@@ -35,6 +36,7 @@ defmodule Cbc do
       "saskatchewan" -> "canada-saskatchewan"
       "saskatoon" -> "canada-saskatoon"
       "manitoba" -> "canada-manitoba"
+      "mb" -> "canada-manitoba"
       "thunderbay" -> "canada-thunderbay"
       "sudbury" -> "canada-sudbury"
       "windsor" -> "canada-windsor"

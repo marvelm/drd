@@ -22,7 +22,7 @@ defmodule Notifier do
     send(spawn(Cbc, :get_feed, ["manitoba", 3]), self)
 
     prev_messages = MapSet.new(prev_messages)
-    messages = listen(7) |>
+    messages = listen(7, []) |>
       MapSet.new |>
       MapSet.difference(prev_messages) |>
       MapSet.to_list
@@ -35,11 +35,11 @@ defmodule Notifier do
     {:noreply, messages}
   end
 
-  def listen(max, messages \\ []) when length(messages) == 0 do
+  def listen(max, messages) when length(messages) == max do
     messages
   end
 
-  def listen(max, messages \\ []) do
+  def listen(max, messages) do
     receive do
       item ->
         {type, _} = item

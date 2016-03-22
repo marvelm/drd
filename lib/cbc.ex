@@ -44,6 +44,7 @@ defmodule Cbc do
       "waterloo" -> "canada-kitchenerwaterloo"
       "toronto" -> "canada-toronto"
       "ottawa" -> "canada-ottawa"
+      "montreal" -> "canada-montreal"
       "newbrunswick" -> "canada-newbrunswick"
       "pei" -> "canada-pei"
       "novascotia" -> "canada-novascotia"
